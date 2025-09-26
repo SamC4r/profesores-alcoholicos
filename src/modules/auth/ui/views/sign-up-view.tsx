@@ -17,14 +17,17 @@ import { useRouter } from "next/navigation"
 
 import { useState } from "react"
 import { authClient } from "@/lib/auth-client"
+import { DateComponent } from "./date-view"
 
 const formSchema = z.object({
+    username: z.string(),
     name: z.string(),
     email: z.string().email(),
     password: z.string().min(1, { message: "Contraseña requerida" }),
     confirmPassword: z.string().min(1, { message: "Contraseña requerida" }),
-    
-}).refine((data) => data.password === data.confirmPassword, { 
+    birthday: z.string().min(1, { message: "Fecha de nacimiento requerida" }),
+
+}).refine((data) => data.password === data.confirmPassword, {
     // in case of error
     message: "Contraseñas no son iguales",
     path: ["confirmPassword"], //what field shows the error
@@ -36,16 +39,18 @@ export const SignUpView = () => {
 
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
-    const [pending,setPending] = useState(false);
+    const [pending, setPending] = useState(false);
 
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            username: "",
             name: "",
             email: "",
             password: "",
             confirmPassword: "",
+            birthday: "",
         }
     });
 
@@ -54,11 +59,15 @@ export const SignUpView = () => {
         setError(null)
         setPending(true)
 
+       
+
         authClient.signUp.email(
             {
+                username: data.username,
                 name: data.name,
                 email: data.email,
                 password: data.password,
+                birthday: data.birthday,
             },
             {
                 onSuccess: () => {
@@ -96,7 +105,28 @@ export const SignUpView = () => {
                                         Crea una cuenta
                                     </p>
                                 </div>
-                                 <div className="grid gap-3">
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="username"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Nombre de Usuario
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="text"
+                                                        placeholder="goblin777"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
                                     <FormField
                                         control={form.control}
                                         name="name"
@@ -180,6 +210,27 @@ export const SignUpView = () => {
                                         )}
                                     />
                                 </div>
+                                  <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="birthday"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Fecha de Nacimiento
+                                                </FormLabel>
+                                                <FormControl>
+
+                                                    <Input 
+                                                        type="date"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                                 {!!error && (
                                     <Alert className="bg-destructive/10 border-none">
                                         <OctagonAlertIcon className="h-4 w-4 !text-destructive" />
@@ -217,12 +268,7 @@ export const SignUpView = () => {
 
                                     </Button>
                                 </div>
-                                <div className="text-center text-sm">
-                                    No tienes usuario? {" "}
-                                    <Link href="/sign-up" className="underline underline-offset-4">
-                                        Crear una cuenta
-                                    </Link>
-                                </div>
+
                             </div>
                         </form>
                     </Form>
