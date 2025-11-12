@@ -38,7 +38,7 @@ export const auth = betterAuth({
 
 
             const { data, error } = await resend.emails.send({
-                from: 'Booster <booster@boostervideos.net>', // Use the exact domain Resend provides
+                from: 'BeerSP <booster@boostervideos.net>', // Use the exact domain Resend provides
                 to: user.email,
                 subject: 'Restablecer contraseña - BeerSP',
                 html,
