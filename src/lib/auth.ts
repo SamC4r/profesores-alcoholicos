@@ -24,11 +24,24 @@ export const auth = betterAuth({
         enabled: true,
         requireEmailVerification: true,
         sendResetPassword: async ({ user, url }, request) => {
+
+            const { default: ForgotPasswordEmail } =
+                await import("../modules/emails/email-forgot-password");
+
+            const html = await render(
+                React.createElement(ForgotPasswordEmail, {
+                    username: user?.name ?? "",
+                    resetUrl: url,
+                    userEmail: user.email,
+                })
+            );
+
+
             const { data, error } = await resend.emails.send({
                 from: 'Booster <booster@boostervideos.net>', // Use the exact domain Resend provides
                 to: user.email,
                 subject: 'Restablecer contraseña - BeerSP',
-                react: ForgotPasswordEmail({ username: user.name, resetUrl: url, userEmail: user.email }),
+                html,
             });
         },
         onPasswordReset: async ({ user }, request) => {
@@ -83,4 +96,8 @@ export const auth = betterAuth({
 });
 
 
+
+function renderAsync(arg0: FunctionComponentElement<Props>) {
+    throw new Error("Function not implemented.");
+}
 
