@@ -40,10 +40,7 @@ export default function EmailVerification({ username = "", verifyurl }: Props) {
                 Este enlace expirará en 24 horas. Si no creaste la cuenta, puedes ignorar este mensaje.
               </Text>
 
-              <Text className="text-[14px] text-gray-600 break-all">
-                Si el botón no funciona, copia y pega este enlace en tu navegador:<br />
-                {verifyurl}
-              </Text>
+             
             </Section>
 
             <Section className="border-t border-gray-200 pt-[24px] mt-[40px] text-center">
