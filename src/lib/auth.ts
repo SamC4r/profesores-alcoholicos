@@ -57,37 +57,30 @@ export const auth = betterAuth({
     }),
 
     emailVerification: {
-        autoVerify:false,
+        autoVerify: false,
+        sendOnSignUp: true,
         sendVerificationEmail: async ({ user, url }) => {
-            console.log('Attempting to send verification email to:', user.email);
+            const u = new URL(url);
+            const token = u.searchParams.get("token")!;
+            const email = user.email;
+
+            const verifyPage = `${process.env.BETTER_AUTH_URL}/verify#token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
 
             const { default: EmailVerification } = await import("../modules/emails/email-verification");
-
             const html = await render(
                 React.createElement(EmailVerification, {
                     username: user?.name ?? "",
-                    verifyurl: url,
+                    verifyurl: verifyPage, 
                 })
             );
 
-            const { data, error } = await resend.emails.send({
+            await resend.emails.send({
                 from: 'BeerSP <booster@boostervideos.net>',
-                to: user.email,
+                to: email,
                 subject: 'Verifica tu correo - BeerSP',
-                // text: `Hola ${user?.name ?? ""}\n\nVerifica tu correo:\n${url}\n`, // fallback
                 html,
-                // react: EmailVerification({ username: user.name, verifyurl: url }),
             });
-
-            if (error) {
-                console.error('Resend API Error:', error);
-                console.log('Would have sent email to:', user.email, 'with URL:', url);
-            }
-
-            console.log('Email sent successfully, ID:', data?.id);
-
         },
-        sendOnSignUp: true,
     },
 
     plugins: [
