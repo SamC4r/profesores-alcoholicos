@@ -97,7 +97,3 @@ export const auth = betterAuth({
 
 
 
-function renderAsync(arg0: FunctionComponentElement<Props>) {
-    throw new Error("Function not implemented.");
-}
-
