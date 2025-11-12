@@ -40,7 +40,7 @@ export default function VerifyPage() {
         const t = setTimeout(() => router.replace("/"), 1200);
         return () => clearTimeout(t);
       })
-      .catch((e: any) => {
+      .catch((e) => {
         setPhase("error");
         setMsg(e?.message || "No se pudo verificar el correo.");
       });
@@ -69,8 +69,8 @@ export default function VerifyPage() {
       if (!r.ok) throw new Error(await r.text());
 
       setMsg("Hemos reenviado el correo de verificación.");
-    } catch (e: any) {
-      setMsg(e?.message || "No se pudo reenviar el correo.");
+    } catch (e) {
+      setMsg("No se pudo reenviar el correo.");
     } finally {
       setResending(false);
     }
