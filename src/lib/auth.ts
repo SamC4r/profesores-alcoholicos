@@ -14,6 +14,7 @@ import ForgotPasswordEmail from "@/modules/emails/email-forgot-password";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
+    baseURL:process.env.BETTER_AUTH_URL!,
     trustHost: true, // This is essential for Vercel
 
     emailAndPassword: {
@@ -46,7 +47,7 @@ export const auth = betterAuth({
             try {
                 // Use a domain that doesn't require verification for testing
                 const { data, error } = await resend.emails.send({
-                    from: 'Booster <booster@boostervideos.net>', // Use the exact domain Resend provides
+                    from: 'BeerSP <booster@boostervideos.net>', // Use the exact domain Resend provides
                     to: user.email,
                     subject: 'Verifica tu correo - BeerSP',
                     react: EmailVerification({ username: user.name, verifyurl: url }),
