@@ -12,12 +12,11 @@ import { Input } from "@/components/ui/input"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import { useState } from "react"
 import { authClient } from "@/lib/auth-client"
-import { DateComponent } from "./date-view"
+import { toast } from "sonner"
 
 const formSchema = z.object({
     username: z.string(),
@@ -67,12 +66,14 @@ export const SignUpView = () => {
                 name: data.name,
                 email: data.email,
                 password: data.password,
+                //@ts-expect-error jijijija
                 birthday: data.birthday,
             },
             {
                 onSuccess: () => {
+                    toast.message("Verify your email address")
                     setPending(false)
-                    router.push("/")
+                    router.push("/sign-in")
                 },
                 onError: ({ error }) => {
                     setPending(false)

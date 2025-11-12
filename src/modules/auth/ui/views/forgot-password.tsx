@@ -17,14 +17,15 @@ import { useRouter } from "next/navigation"
 
 import { useState } from "react"
 import { authClient } from "@/lib/auth-client"
+import { toast } from "sonner"
+import { Elsie_Swash_Caps } from "next/font/google"
 
 const formSchema = z.object({
-    user: z.string(),
-    password: z.string().min(1, { message: "Contraseña requerida" }),
+    email: z.string().email(),
 })
 
 
-export const SignInView = () => {
+export const ForgotPasswordView = () => {
 
 
     const router = useRouter();
@@ -35,33 +36,28 @@ export const SignInView = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            user: "",
-            password: "",
+            email: "",
         }
     });
 
 
-    const onSubmit = (data: z.infer<typeof formSchema>) => {
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
         setError(null)
         setPending(true)
 
-        authClient.signIn.username(
-            {
-                username: data.user,
-                password: data.password,
-                rememberMe: true, //TODO: ver si cambiar o no
-            },
-            {
-                onSuccess: () => {
-                    setPending(false)
-                    router.push("/")
-                },
-                onError: ({ error }) => {
-                    setPending(false)
-                    setError(error.message)
-                }
-            }
-        )
+        const {  error } = await authClient.forgetPassword({
+            email: data.email,
+            redirectTo: "/reset-password",
+        });
+        
+        if(error){
+            toast.error("Error")
+        }else{
+            toast.success("Se ha enviado un correo con las instrucciones para restablecer la contraseña!")
+        }
+
+        setPending(false);
+        
     }
 
     
@@ -83,24 +79,24 @@ export const SignInView = () => {
                             <div className="flex flex-col gap-6">
                                 <div className="flex flex-col items-center text-center">
                                     <h1 className="text-2xl font-bold">
-                                        Bienvenido
+                                        Contraseña olvidada
                                     </h1>
-                                    <p className="text-muted-foreground text-balance">
-                                        Iniciar sesión en tu cuenta
+                                    <p className="text-muted-foreground text-sm pt-1">
+                                        Introduce to correo para restablecer tu contraseña
                                     </p>
                                 </div>
                                 <div className="grid gap-3">
                                     <FormField
                                         control={form.control}
-                                        name="user"
+                                        name="email"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
-                                                    Usuario
+                                                    Correo
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        placeholder="sammas24"
+                                                        placeholder="nombre.apellido@alumnos.upm.es"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -109,27 +105,7 @@ export const SignInView = () => {
                                         )}
                                     />
                                 </div>
-                                <div className="grid gap-3">
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Contrasena
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="password"
-                                                        placeholder="***********"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
+                               
                                 {!!error && (
                                     <Alert className="bg-destructive/10 border-none">
                                         <OctagonAlertIcon className="h-4 w-4 !text-destructive" />
@@ -140,21 +116,10 @@ export const SignInView = () => {
 
 
                                 <Button type="submit" className="w-full " disabled={pending}>
-                                    Iniciar sesión
+                                    Restablecer Contraseña
                                 </Button>
 
 
-                                <div className="text-center">
-                                    <Link className='bg-card text-muted-foreground relative z-10 px-2 hover:underline hover:underline-offset-4 hover:cursor-pointer' href={"/forgot-password"}>
-                                        Has olvidado la contraseña?
-                                    </Link>
-                                </div>
-                                <div className="text-center text-sm">
-                                    No tienes usuario? {" "}
-                                    <Link href="/sign-up" className="underline underline-offset-4">
-                                        Crear una cuenta
-                                    </Link>
-                                </div>
                             </div>
                         </form>
                     </Form>
@@ -169,9 +134,6 @@ export const SignInView = () => {
                     </div>
                 </CardContent>
             </Card>
-            <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-                Al iniciar sesión seras un profesor alcohólico
-            </div>
         </div>
     )
 }
