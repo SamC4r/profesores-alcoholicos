@@ -32,8 +32,7 @@ export default function VerifyPage() {
     // Gate on a real user gesture
     if (!e.isTrusted) return; // ignore synthetic
     // Some scanners fire click events; require active user
-    // @ts-ignore
-    if (typeof navigator !== "undefined" && navigator.userActivation && !navigator.userActivation.isActive) return;
+
 
     if (!token) {
       setPhase("error");
