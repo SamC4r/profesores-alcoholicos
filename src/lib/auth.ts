@@ -10,6 +10,7 @@ import * as schema from "@/db/schema"
 import { birthdayPlugin } from "@/db/birthday";
 import EmailVerification from "@/modules/emails/email-verification";
 import ForgotPasswordEmail from "@/modules/emails/email-forgot-password";
+import React from "react";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -42,23 +43,35 @@ export const auth = betterAuth({
 
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
-            console.log('Attempting to send verification email to:', user.email);
+      const m = await import("../modules/emails/email-verification"); // <-- adjust if your path differs
+      console.log("typeof EmailVerification:", typeof m.default); // should be "function"
 
-            const { data, error } = await resend.emails.send({
-                from: 'BeerSP <booster@boostervideos.net>',
-                to: user.email,
-                subject: 'Verifica tu correo - BeerSP',
-                react: EmailVerification({ username: user.name, verifyurl: url }),
-            });
+      if (typeof m.default !== "function") {
+        // fallback so users aren’t blocked
+        const { error } = await resend.emails.send({
+          from: "BeerSP <booster@boostervideos.net>",
+          to: user.email,
+          subject: "Verifica tu correo - BeerSP",
+          text: `Hola ${user?.name ?? ""}\n\nVerifica tu correo:\n${url}\n`,
+        });
+        if (error) throw error;
+        return;
+      }
 
-            if (error) {
-                console.error('Resend API Error:', error);
-                console.log('Would have sent email to:', user.email, 'with URL:', url);
-            }
+      const element = React.createElement(m.default, {
+        username: user?.name ?? "",
+        verifyurl: url,
+      });
 
-            console.log('Email sent successfully, ID:', data?.id);
-
-        },
+      const { error } = await resend.emails.send({
+        from: "BeerSP <booster@boostervideos.net>",
+        to: user.email,
+        subject: "Verifica tu correo - BeerSP",
+        react: element,
+        text: `Hola ${user?.name ?? ""}\n\nVerifica tu correo:\n${url}\n`,
+      });
+      if (error) throw error;
+    },
         sendOnSignUp: true,
     },
 

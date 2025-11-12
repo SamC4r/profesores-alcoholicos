@@ -12,7 +12,6 @@ import {
   Text,
   Tailwind,
 } from '@react-email/components';
-import { user } from '@/db/schema';
 
 interface Props{
     username:string;
