@@ -28,16 +28,17 @@ export default function EmailVerification({ username = "", verifyurl }: Props) {
               </Text>
 
               <Section className="text-center mb-[32px]">
-                <Button
+                {/* <Button
                   className="bg-blue-600 text-white px-[32px] py-[16px] rounded-[8px] text-[16px] font-semibold no-underline"
                   href={verifyurl}
                 >
                   Verificar correo
-                </Button>
+                </Button> */}
               </Section>
 
               <Text className="text-[14px] text-gray-600 mb-[24px]">
                 Este enlace expirará en 24 horas. Si no creaste la cuenta, puedes ignorar este mensaje.
+                {verifyurl}
               </Text>
 
              
