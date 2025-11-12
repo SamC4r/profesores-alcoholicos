@@ -14,6 +14,8 @@ import ForgotPasswordEmail from "@/modules/emails/email-forgot-password";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
+    trustHost: true, // This is essential for Vercel
+
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
