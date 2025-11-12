@@ -57,6 +57,7 @@ export const auth = betterAuth({
     }),
 
     emailVerification: {
+        autoVerify:false,
         sendVerificationEmail: async ({ user, url }) => {
             console.log('Attempting to send verification email to:', user.email);
 
