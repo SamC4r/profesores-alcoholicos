@@ -1,78 +1,54 @@
-import * as React from 'react';
+// src/modules/emails/email-verification.tsx
+import * as React from "react";
 import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Preview,
-  Section,
-  Text,
-  Tailwind,
-} from '@react-email/components';
+  Body, Button, Container, Head, Heading, Html, Preview, Section, Text, Tailwind,
+} from "@react-email/components";
 
+interface Props { username?: string; verifyurl: string; }
 
-interface Props{
-    username:string;
-    verifyurl:string;
-}
-
-const EmailVerification = ({
-    username,
-    verifyurl,
-}:Props) => {
+export default function EmailVerification({ username = "", verifyurl }: Props) {
   return (
-    <Html lang="en" dir="ltr">
+    <Html lang="es" dir="ltr">
       <Head />
-      <Preview>Please verify your email address to complete your registration</Preview>
+      <Preview>Verifica tu correo para completar el registro</Preview>
       <Tailwind>
         <Body className="bg-gray-100 font-sans py-[40px]">
           <Container className="bg-white rounded-[8px] px-[48px] py-[40px] mx-auto max-w-[600px]">
             <Section>
               <Heading className="text-[32px] font-bold text-gray-900 text-center mb-[32px]">
-                Verify Your Email
+                Verifica tu correo
               </Heading>
-              
+
               <Text className="text-[16px] text-gray-700 mb-[24px]">
-                Hi there!
+                ¡Hola {username || "allí"}!
               </Text>
-              
+
               <Text className="text-[16px] text-gray-700 mb-[24px]">
-                Gracias {username} por crear una cuenta.
-                Por favor, verifica tu correo.
+                Gracias por crear una cuenta. Por favor, verifica tu correo.
               </Text>
-              
+
               <Section className="text-center mb-[32px]">
                 <Button
-                  className="bg-blue-600 text-white px-[32px] py-[16px] rounded-[8px] text-[16px] font-semibold box-border"
+                  className="bg-blue-600 text-white px-[32px] py-[16px] rounded-[8px] text-[16px] font-semibold no-underline"
                   href={verifyurl}
                 >
-                  Verify Email Address
+                  Verificar correo
                 </Button>
               </Section>
-              
+
               <Text className="text-[14px] text-gray-600 mb-[24px]">
-                This verification link will expire in 24 hours. If you did not create an account, 
-                you can safely ignore this email.
+                Este enlace expirará en 24 horas. Si no creaste la cuenta, puedes ignorar este mensaje.
               </Text>
-              
-              <Text className="text-[14px] text-gray-600">
-                If you are having trouble clicking the button, copy and paste this URL into your browser:
-                <br />
-                https://example.com/verify
+
+              <Text className="text-[14px] text-gray-600 break-all">
+                Si el botón no funciona, copia y pega este enlace en tu navegador:<br />
+                {verifyurl}
               </Text>
             </Section>
-            
-            <Section className="border-t border-gray-200 pt-[24px] mt-[40px]">
-              <Text className="text-[12px] text-gray-500 text-center m-0 mb-[8px]">
-                © 2024 Your Company Name. All rights reserved.
-              </Text>
-              <Text className="text-[12px] text-gray-500 text-center m-0 mb-[8px]">
-                123 Business Street, Suite 100, Madrid, Spain
-              </Text>
-              <Text className="text-[12px] text-gray-500 text-center m-0">
-                <a href="#" className="text-gray-500 underline">Unsubscribe</a>
+
+            <Section className="border-t border-gray-200 pt-[24px] mt-[40px] text-center">
+              <Text className="text-[12px] text-gray-500 m-0">
+                © 2025 BeerSP. Todos los derechos reservados.
               </Text>
             </Section>
           </Container>
@@ -80,6 +56,4 @@ const EmailVerification = ({
       </Tailwind>
     </Html>
   );
-};
-
-export default EmailVerification;
+}
