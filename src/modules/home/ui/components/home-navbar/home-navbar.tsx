@@ -11,6 +11,7 @@ export const Navbar = () => {
         // refetch,
     } = authClient.useSession();
 
+    const userId = session?.user.id
 
 
     return (
@@ -44,7 +45,7 @@ export const Navbar = () => {
                             Locations
                         </Link>
                         <Link
-                            href="/profile"
+                            href={`/users/${userId}`}
                             className="text-emerald-700 hover:text-emerald-900 transition-colors"
                         >
                             Profile

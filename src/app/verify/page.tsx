@@ -12,7 +12,6 @@ export default function VerifyPage() {
   const [msg, setMsg] = useState<string>("Ingresa para verificar tu correo.");
   const [resending, setResending] = useState(false);
 
-  // Read token/email from the URL fragment so scanners can't see them
   const { token, email } = useMemo(() => {
     const params = new URLSearchParams(
       (typeof window !== "undefined" ? window.location.hash : "").replace(/^#/, "")
@@ -23,15 +22,8 @@ export default function VerifyPage() {
     };
   }, []);
 
-  // Optional: require a cookie set during signup to reduce false clicks
-  function hasSignupCookie() {
-    return typeof document !== "undefined" && document.cookie.includes("signup_started=1");
-  }
-
   async function handleVerifyClick(e: React.MouseEvent<HTMLButtonElement>) {
-    // Gate on a real user gesture
-    if (!e.isTrusted) return; // ignore synthetic
-    // Some scanners fire click events; require active user
+    if (!e.isTrusted) return;
 
 
     if (!token) {
@@ -39,21 +31,15 @@ export default function VerifyPage() {
       setMsg("Falta el token de verificación.");
       return;
     }
-    // Optional cookie check
-    if (!hasSignupCookie()) {
-      setPhase("error");
-      setMsg("Sesión no válida. Abre el enlace desde el navegador donde te registraste.");
-      return;
-    }
+    
 
     setPhase("posting");
     setMsg("Verificando…");
     try {
-      // Verify via Better Auth's built-in endpoint
       await authClient.verifyEmail({ query: { token } });
       setPhase("ok");
       setMsg("Correo verificado correctamente. Redirigiendo…");
-      setTimeout(() => router.replace("/"), 1000);
+      setTimeout(() => router.replace("/sign-in"), 1000);
     } catch (err) {
       setPhase("error");
       setMsg("No se pudo verificar el correo.");
@@ -68,9 +54,6 @@ export default function VerifyPage() {
     }
     try {
       setResending(true);
-      // If your Better Auth version exposes a resend helper, use it here instead:
-      // await authClient.requestEmailVerification({ body: { email } });
-      // Otherwise call a tiny server endpoint you own that triggers sendVerificationEmail
       const r = await fetch("/api/auth/send-verification-email", {
         method: "POST",
         headers: { "content-type": "application/json" },

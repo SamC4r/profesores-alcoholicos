@@ -14,6 +14,8 @@ export const user = pgTable("user", {
   username: text("username").unique(),
   displayUsername: text("display_username"),
   birthday: date("birthday"),
+  bio: text("bio"),
+  imageUrl: text("imageUrl"),
 });
 
 
