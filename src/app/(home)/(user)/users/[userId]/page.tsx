@@ -11,6 +11,8 @@ const Page = async ({params}:Props) => {
     const {userId} = await params;
 
     void trpc.users.getOne.prefetch({userId})
+    void trpc.users.getFriends.prefetch({userId})
+    void trpc.users.getPending.prefetch({userId})
 
 
     return (

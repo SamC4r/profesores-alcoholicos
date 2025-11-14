@@ -6,11 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin,  UserPlus, Calendar, Mail, Phone, Edit, Check, MessageCircle, OctagonAlertIcon, Search, UserCheck, Users, X, Beer, Store } from "lucide-react";
+import { MapPin, UserPlus, Calendar, Mail, Phone, Edit, Check, MessageCircle, OctagonAlertIcon, Search, UserCheck, Users, X, Beer, Store, Send, LogOut } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient, useSession } from "@/lib/auth-client";
 import { ThumbnailUploadModal } from "../components/image-upload-modal";
+import { UserInfo } from "../components/user-info";
+import { UserFriendRequest } from "../components/user-friend-request";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   userId: string;
@@ -75,13 +78,52 @@ export const UsersViewSuspense = ({ userId }: Props) => {
   const { data: userData } = trpc.users.getOne.useQuery({ userId });
   // const { data: recentLocations } = trpc.users.getRecentLocations.useQuery({ userId });
 
+  const [friends] = trpc.users.getFriends.useSuspenseQuery({ userId })
+  const [pendientes] = trpc.users.getPending.useSuspenseQuery({ userId })
+
+  console.log("FRIENDS", friends)
+
   const { data: session } = useSession();
-  
+
   const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+
+
+  const { data: amigos } = trpc.users.getFriendship.useQuery({ userId })
+
+  const utils = trpc.useUtils();
+
+  const { mutate: sendFriendRequest, isPending } = trpc.users.sendRequest.useMutation({
+    onSuccess: () => {
+      utils.users.getFriendship.invalidate({ userId })
+    }
+  });
+
+  const handleSendRequest = () => {
+    sendFriendRequest({ toUserId: userId })
+  }
+
+
+
+  const filteredUsers = friends.filter(user => {
+
+    //xd => se podria hacer mucho mejor pero bueno
+
+    if (user.userA?.id === userId) {
+      return user.userB?.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.userB?.username?.includes(searchQuery.toLowerCase());
+    } else {
+      return user.userA?.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.userA?.username?.includes(searchQuery.toLowerCase());
+    }
+  }
+  );
 
   if (!userData) return <ProfileLoading />;
 
   const { user } = userData;
+
+  console.log("Session", session?.user.id)
+
 
   return (
     <>
@@ -96,15 +138,26 @@ export const UsersViewSuspense = ({ userId }: Props) => {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-green-100/50 p-6">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4 flex-1">
-                <Avatar className="w-20 h-20 border-4 border-white shadow-lg hover:cursor-pointer"
-                  onClick={() => setThumbnailModalOpen(true)}
-                >
-                  <AvatarImage src={user.imageUrl?? ""} alt={user.name || 'User'}  className="hover:cursor-pointer"
-                  />
-                  <AvatarFallback className="bg-gradient-to-br from-green-500 to-teal-600 text-white text-xl font-bold">
-                    {user.name?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+                {session?.user.id === userId ? (
+                  <Avatar className="w-20 h-20 border-4 border-white shadow-lg hover:cursor-pointer"
+                    onClick={() => setThumbnailModalOpen(true)}
+                  >
+                    <AvatarImage src={user.imageUrl ?? ""} alt={user.name || 'User'} className="hover:cursor-pointer"
+                    />
+                    <AvatarFallback className="bg-gradient-to-br from-green-500 to-teal-600 text-white text-xl font-bold">
+                      {user.name?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <Avatar className="w-20 h-20 border-4 border-white shadow-lg "
+                  >
+                    <AvatarImage src={user.imageUrl ?? ""} alt={user.name || 'User'} className="hover:cursor-pointer"
+                    />
+                    <AvatarFallback className="bg-gradient-to-br from-green-500 to-teal-600 text-white text-xl font-bold">
+                      {user.name?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
@@ -120,17 +173,35 @@ export const UsersViewSuspense = ({ userId }: Props) => {
               </div>
 
               <div className="flex gap-3 w-full lg:w-auto">
-                {session?.user.id !== userId ? (
-                  <Button variant="outline" className="flex-1 lg:flex-none border-green-200 text-green-700 hover:bg-green-50">
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit
+                {session?.user.id === userId ? (
+                  <Button
+                    onClick={() => authClient.signOut()}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <LogOut className="size-4" />
+                    Cerrar sesión
+                  </Button>
+                ) : amigos && amigos?.length > 0 ? !amigos[0].aceptada ? (
+
+                  <Button className="flex-1 lg:flex-none  text-white bg-green-600 opacity-65">
+                    <Send className="w-4 h-4 mr-2" />
+                    {amigos[0].userA !== userId ? <p>Solicitud Enviada</p> : <p>Esperando tu respuesta...</p>}
                   </Button>
                 ) : (
-                  <Button className="flex-1 lg:flex-none bg-green-600 hover:bg-green-700 text-white">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Añadir amigo
+                  <Button className="flex-1 lg:flex-none  text-white bg-green-600 opacity-65">
+                    <UserCheck className="w-4 h-4 mr-2" />
+                    Amigos
                   </Button>
-                )}
+                ) :
+                  (
+                    <Button className="flex-1 lg:flex-none bg-green-600 hover:bg-green-700 text-white"
+                      onClick={handleSendRequest}
+                      disabled={isPending}
+                    >
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Añadir amigo
+                    </Button>
+                  )}
               </div>
             </div>
           </div>
@@ -238,58 +309,65 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                      <Users className="w-5 h-5 text-emerald-600" />
+                      <Users className="w-5 h-5 text-green-600" />
                       Amigos
-                      <Badge className="bg-emerald-100 text-emerald-800 border-0">
-                        {MockAmigos.length}
+                      <Badge className="bg-green-100 text-green-800 border-0">
+                        {friends.length}
                       </Badge>
                     </CardTitle>
-                    <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
-                      <Search className="w-4 h-4 mr-1" />
-                      Buscar
-                    </Button>
+                    <div className="relative flex-1 ml-5">
+                      <Input
+                        type="text"
+                        placeholder="Search profiles..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter'}
+                        className="w-full pl-10 pr-20 py-3 bg-white/80 dark:bg-[#212121] text-gray-900 dark:text-white rounded-xl backdrop-blur-sm placeholder-gray-500 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-600 transition-colors"
+                        aria-label="Search profiles"
+                      />
+
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-600 " />
+                    </div>
+
                   </div>
                 </CardHeader>
+
                 <CardContent className="p-0">
                   <div className="max-h-96 overflow-y-auto custom-scrollbar">
                     <div className="space-y-2 p-4">
-                      {MockAmigos.length > 0 ? (
-                        MockAmigos.map((item, index) => (
-                          <div
-                            key={item.name}
-                            className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all duration-200 group cursor-pointer"
-                          >
-                            <div className="relative">
-                              <Avatar className="w-12 h-12 border-2 border-white shadow-md group-hover:border-emerald-200 transition-colors">
-                                <AvatarImage src={user.imageUrl ?? ""} alt={item.name} />
-                                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-semibold">
-                                  {item.name?.charAt(0).toUpperCase() || 'U'}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-gray-900 truncate text-sm">
-                                  {item.name}
-                                </h3>
-                                <p className="text-xs text-gray-600 truncate">@{item.username}</p>
-                              </div>
+                      {filteredUsers.length > 0 ? (
+                        filteredUsers.map((item, index) => {
 
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-emerald-100"
-                            >
-                              <MessageCircle className="w-4 h-4 text-emerald-600" />
-                            </Button>
-                          </div>
-                        ))
+                          if (item.userA?.id === userId) {
+                            return (
+                              <UserInfo
+                                key={item.userB?.id}
+                                id={item.userB?.id}
+                                name={item.userB?.name}
+                                imageUrl={item.userB?.imageUrl}
+                                username={item.userB?.username}
+                              />
+                            )
+                          } else {
+                            return (
+                              <UserInfo
+
+                                key={item.userA?.id}
+                                id={item.userA?.id}
+                                name={item.userA?.name}
+                                imageUrl={item.userA?.imageUrl}
+                                username={item.userA?.username}
+                              />
+                            )
+                          }
+                        }
+                        )
                       ) : (
                         <div className="text-center py-8">
                           <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                          <p className="text-gray-500 font-medium">No tienes amigos aún</p>
-                          <p className="text-sm text-gray-400 mt-1">Agrega amigos para comenzar</p>
-                          <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700">
+                          <p className="text-gray-500 font-medium">No se han encontrado amigos</p>
+                          <p className="text-sm text-gray-400 mt-1">Agrega más amigos</p>
+                          <Button className="mt-4 bg-green-600 hover:bg-green-700">
                             <UserPlus className="w-4 h-4 mr-2" />
                             Buscar Amigos
                           </Button>
@@ -298,9 +376,9 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                     </div>
                   </div>
 
-                  {MockAmigos.length > 0 && (
+                  {friends.length > 0 && (
                     <div className="border-t border-gray-100 p-4 bg-gray-50/50 rounded-b-xl">
-                      <Button variant="outline" className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                      <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50">
                         <UserPlus className="w-4 h-4 mr-2" />
                         Gestionar Amigos
                       </Button>
@@ -318,7 +396,7 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                         <UserPlus className="w-5 h-5 text-orange-500" />
                         Solicitudes Pendientes
                         <Badge className="bg-orange-100 text-orange-800 border-0">
-                          {MockAmigos.length}
+                          {pendientes.length}
                         </Badge>
                       </CardTitle>
                     </div>
@@ -326,43 +404,16 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                   <CardContent className="p-0">
                     <div className="max-h-64 overflow-y-auto custom-scrollbar">
                       <div className="space-y-3 p-4">
-                        {MockAmigos.length > 0 ? (
-                          MockAmigos.slice(0, 3).map((item) => (
-                            <div
-                              key={`request-${item.name}`}
-                              className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100 hover:border-orange-200 transition-all duration-200"
-                            >
-                              <Avatar className="w-10 h-10 border-2 border-white shadow-sm">
-                                <AvatarImage src={user.imageUrl || ""} alt={item.name} />
-                                <AvatarFallback className="bg-gradient-to-br from-orange-400 to-amber-500 text-white text-sm">
-                                  {item.name?.charAt(0).toUpperCase() || 'U'}
-                                </AvatarFallback>
-                              </Avatar>
-
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-gray-900 truncate text-sm">
-                                  {item.name}
-                                </h3>
-                                <p className="text-xs text-gray-600 truncate">@{item.username}</p>
-                                <p className="text-xs text-gray-500 mt-1">Hace 2 días</p>
-                              </div>
-
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white"
-                                >
-                                  <Check className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 border-red-200 text-red-600 hover:bg-red-50"
-                                >
-                                  <X className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            </div>
+                        {pendientes.length > 0 ? (
+                          pendientes.map((item) => (
+                            <UserFriendRequest
+                              key={item.userA!.id} //xd 
+                              id={item.userA!.id} //xd 
+                              imageUrl={item.userA?.imageUrl}
+                              name={item.userA?.name}
+                              username={item.userA?.username}
+                              userId={userId}
+                            />
                           ))
                         ) : (
                           <div className="text-center py-6">
@@ -373,13 +424,14 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                       </div>
                     </div>
 
-                    {MockAmigos.length > 3 && (
+                    {/* TODO: good  addition */}
+                    {/* {MockAmigos.length > 3 && (
                       <div className="border-t border-gray-100 p-3 bg-gray-50/50 rounded-b-xl">
-                        <Button variant="ghost" className="w-full text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 text-sm">
+                        <Button variant="ghost" className="w-full text-green-600 hover:text-green-700 hover:bg-green-50 text-sm">
                           Ver todas las solicitudes ({MockAmigos.length})
                         </Button>
                       </div>
-                    )}
+                    )} */}
                   </CardContent>
                 </Card>
               )}

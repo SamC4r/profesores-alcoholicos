@@ -1,4 +1,4 @@
-import { boolean, date, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -67,3 +67,20 @@ export const verification = pgTable("verification", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+
+
+export const solicitudesAmistad = pgTable("solicitudes_amistad", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userA: text("userA").references(() => user.id, { onDelete: "cascade" }).notNull(), //userA sends the friend request
+  userB: text("userB").references(() => user.id, { onDelete: "cascade" }).notNull(), //userB receives the friend request
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  aceptada: boolean().default(false),
+},  (t) => ({
+  uniquePair: uniqueIndex("solicitudes_unique_pair").on(t.userA, t.userB),
+}));
+  
+  
+  
+
