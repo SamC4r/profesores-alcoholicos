@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, UserPlus, Calendar, Mail, Phone, Edit, Check, MessageCircle, OctagonAlertIcon, Search, UserCheck, Users, X, Beer, Store, Send, LogOut } from "lucide-react";
+import { MapPin, UserPlus, Calendar, Mail, Phone, Edit, Check, MessageCircle, OctagonAlertIcon, Search, UserCheck, Users, X, Beer, Store, Send, LogOut, Pen } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient, useSession } from "@/lib/auth-client";
@@ -139,8 +139,10 @@ export const UsersViewSuspense = ({ userId }: Props) => {
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="flex items-center gap-4 flex-1">
                 {session?.user.id === userId ? (
-                  <Avatar className="w-20 h-20 border-4 border-white shadow-lg hover:cursor-pointer"
+                  <div className="relative  hover:cursor-pointer"
                     onClick={() => setThumbnailModalOpen(true)}
+                  >
+                  <Avatar className="w-20 h-20 border-4 border-white shadow-lg"
                   >
                     <AvatarImage src={user.imageUrl ?? ""} alt={user.name || 'User'} className="hover:cursor-pointer"
                     />
@@ -148,6 +150,10 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                       {user.name?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
+                  <div className="absolute bottom-0 -right-1 rounded-full bg-green-500/90 p-1.5">
+                  <Pen className="size-4 " />
+                    </div>
+                  </div>
                 ) : (
                   <Avatar className="w-20 h-20 border-4 border-white shadow-lg "
                   >
