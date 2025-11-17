@@ -28,12 +28,12 @@ export default function EmailVerification({ username = "", verifyurl }: Props) {
               </Text>
 
               <Section className="text-center mb-[32px]">
-                {/* <Button
-                  className="bg-blue-600 text-white px-[32px] py-[16px] rounded-[8px] text-[16px] font-semibold no-underline"
+                <Button
+                  className="bg-green-600 text-white px-[32px] py-[16px] rounded-[8px] text-[16px] font-semibold no-underline"
                   href={verifyurl}
                 >
                   Verificar correo
-                </Button> */}
+                </Button>
               </Section>
 
               <Text className="text-[14px] text-gray-600 mb-[24px]">
@@ -46,7 +46,7 @@ export default function EmailVerification({ username = "", verifyurl }: Props) {
 
             <Section className="border-t border-gray-200 pt-[24px] mt-[40px] text-center">
               <Text className="text-[12px] text-gray-500 m-0">
-                © 2025 BeerSP. Todos los derechos reservados.
+                © 2025 BeerSP
               </Text>
             </Section>
           </Container>

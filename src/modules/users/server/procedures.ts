@@ -185,8 +185,11 @@ export const usersRouter = createTRPCRouter({
 
             const id = exists.at(0)?.id;
 
-            if (!id) { // xd
-                return;
+             if (!id) { // 
+                throw new TRPCError({
+                    code:"NOT_FOUND",
+                    message:"No existe una amistad entre estos dos amigos",
+                })
             }
             console.log(id)
 
@@ -220,8 +223,11 @@ export const usersRouter = createTRPCRouter({
 
             const id = exists.at(0)?.id;
 
-            if (!id) { // xd
-                return;
+            if (!id) { // 
+                throw new TRPCError({
+                    code:"NOT_FOUND",
+                    message:"No existe una amistad entre estos dos amigos",
+                })
             }
             console.log(id)
 

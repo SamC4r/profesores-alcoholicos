@@ -221,7 +221,7 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                     <p className="text-sm font-medium text-gray-600">Numero de degustaciones</p>
                     <div className="flex items-center gap-2 mt-2">
                       <Beer className="w-5 h-5  text-yellow-400" />
-                      <span className="text-2xl font-bold text-gray-900">8</span>
+                      <span className="text-2xl font-bold text-gray-900">0</span>
                     </div>
                   </div>
                   <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -238,7 +238,7 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                     <p className="text-sm font-medium text-gray-600">Locales Introducidos (7 dias)</p>
                     <div className="flex items-center gap-2">
                       <Store className="w-6 h-6 text-blue-600" />
-                      <p className="text-2xl font-bold text-gray-900 mt-2">2</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-2">0</p>
                     </div>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -279,7 +279,7 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 leading-relaxed">
-                    {user.bio || "No bio available. This user hasn't added any information about themselves yet."}
+                    {user.bio || "Este usuario no ha añadido ninguna descripción."}
                   </p>
                 </CardContent>
               </Card>
@@ -299,8 +299,8 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                           <MapPin className="w-5 h-5 text-green-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">Checked in at a new location</p>
-                          <p className="text-xs text-gray-500">2 hours ago</p>
+                          <p className="text-sm font-medium text-gray-900">Nueva degustación añadida</p>
+                          <p className="text-xs text-gray-500">Hace 2 horas</p>
                         </div>
                       </div>
                     ))}
@@ -449,23 +449,4 @@ export const UsersViewSuspense = ({ userId }: Props) => {
     </>
   );
 };
-
-const MockAmigos = [
-  {
-    "name": "Samuel",
-    "username": "sammas24",
-  },
-  {
-    "name": "Andres",
-    "username": "popoliku",
-  },
-  {
-    "name": "Ivan",
-    "username": "ICARA",
-  },
-  {
-    "name": "messi",
-    "username": "d10s",
-  }
-]
 
