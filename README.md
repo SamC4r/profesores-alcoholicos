@@ -1,8 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Este es un proyecto creado con Next.js
 
-## Getting Started
+## Como ejecutar
 
-First, run the development server:
+Para arrancar la aplicacion, se debe ejecutar en la consola uno de estos comandos.
 
 ```bash
 npm run dev
@@ -14,23 +14,41 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Durante el desarrollo se ha usado el `bun run dev` asi que se recomienda usar ese.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Posibles Errores al Ejecutar
 
-## Learn More
+En caso de tener errores de falta de paquetes o algunas otras dependencias, se debe ejecutar
 
-To learn more about Next.js, take a look at the following resources:
+`bun install`  o  `npm install`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+para instalarl los paquetes que faltan con las versiones de `package.json`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Importante
 
-## Deploy on Vercel
+Para que las APIs externas funcionen se debe tener un fichero `.env` en la raiz del proyecto `/`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+En este documento se deben incluir las siguientes claves de API (verificar que estan todas):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+
+# Conexion con la base de datos
+DATABASE_URL=...
+
+# Para conectarse con la libreria que ayuda en la autenticacion de usuario
+BETTER_AUTH_SECRET=...
+BETTER_AUTH_URL=...
+
+
+# Para envio de correos 
+RESEND_API_KEY=...
+
+# Para manejar las imagenes.
+UPLOADTHING_TOKEN=...
+
+```
+
+La version final de la aplicacion se encuentra alojada en 
+
+https://profesores-alcoholicos.vercel.app/
