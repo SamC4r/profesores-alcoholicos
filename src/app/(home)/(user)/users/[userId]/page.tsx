@@ -3,16 +3,17 @@ import { HydrateClient, trpc } from "@/trpc/server";
 
 
 type Props = {
-    params: Promise<{userId: string}>
+    params: Promise<{ userId: string }>
 }
 
-const Page = async ({params}:Props) => {
+const Page = async ({ params }: Props) => {
 
-    const {userId} = await params;
+    const { userId } = await params;
 
-    void trpc.users.getOne.prefetch({userId})
-    void trpc.users.getFriends.prefetch({userId})
-    void trpc.users.getPending.prefetch({userId})
+    void trpc.users.getOne.prefetch({ userId })
+    void trpc.users.getFriends.prefetch({ userId })
+    void trpc.users.getPending.prefetch({ userId })
+    void trpc.users.getDegustaciones.prefetch({ userId })
 
 
     return (

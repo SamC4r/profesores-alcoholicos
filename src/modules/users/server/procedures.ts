@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { solicitudesAmistad, user } from "@/db/schema";
+import { cervezas, degustaciones, solicitudesAmistad, user } from "@/db/schema";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { and, eq, getTableColumns, or } from "drizzle-orm";
@@ -185,10 +185,10 @@ export const usersRouter = createTRPCRouter({
 
             const id = exists.at(0)?.id;
 
-             if (!id) { // 
+            if (!id) { // 
                 throw new TRPCError({
-                    code:"NOT_FOUND",
-                    message:"No existe una amistad entre estos dos amigos",
+                    code: "NOT_FOUND",
+                    message: "No existe una amistad entre estos dos amigos",
                 })
             }
             console.log(id)
@@ -225,8 +225,8 @@ export const usersRouter = createTRPCRouter({
 
             if (!id) { // 
                 throw new TRPCError({
-                    code:"NOT_FOUND",
-                    message:"No existe una amistad entre estos dos amigos",
+                    code: "NOT_FOUND",
+                    message: "No existe una amistad entre estos dos amigos",
                 })
             }
             console.log(id)
@@ -237,4 +237,25 @@ export const usersRouter = createTRPCRouter({
 
             return upd;
         }),
+
+    getDegustaciones: baseProcedure
+        .input(z.object({
+            userId: z.string(),
+        }))
+        .query(async ({ input }) => {
+            const { userId } = input;
+            const results = await db
+                .select({
+                    ...getTableColumns(degustaciones),
+                    cerveza: {
+                        ...getTableColumns(cervezas),
+                    }
+                })
+                .from(degustaciones)
+                .innerJoin(cervezas, eq(cervezas.id, degustaciones.cervezaId))
+                .where(eq(degustaciones.autor, userId))
+
+            return results;
+
+        })
 })
