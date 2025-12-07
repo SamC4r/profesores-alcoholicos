@@ -19,7 +19,7 @@ Durante el desarrollo se ha usado el `bun run dev` asi que se recomienda usar es
 
 ## Posibles Errores al Ejecutar
 
-En caso de tener errores de falta de paquetes o algunas otras dependencias, se debe ejecutar
+En caso de tener errores de falta de paquetes o algunas otras dependencias, se debe ejecutar: 
 
 `bun install`  o  `npm install`
 
