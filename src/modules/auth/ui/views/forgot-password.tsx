@@ -45,6 +45,7 @@ export const ForgotPasswordView = () => {
         setError(null)
         setPending(true)
 
+        // @ts-expect-error - Vercel what?
         const {  error } = await authClient.forgetPassword({
             email: data.email,
             redirectTo: "/reset-password",

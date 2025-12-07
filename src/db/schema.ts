@@ -113,6 +113,5 @@ export const degustaciones = pgTable("degustacion", {
     updatedAt: timestamp("updated_at")
 })
 
-export const degustacionInsertSchema = createInsertSchema(degustaciones, {
-})
+export const degustacionInsertSchema = createInsertSchema(degustaciones)
 
