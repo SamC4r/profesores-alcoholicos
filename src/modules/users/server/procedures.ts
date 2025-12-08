@@ -257,5 +257,26 @@ export const usersRouter = createTRPCRouter({
 
             return results;
 
+        }),
+
+    updateNames: protectedProcedure
+        .input(z.object({
+            username: z.string().min(1),
+            name: z.string().min(1),
+        }))
+        .mutation(async ({ ctx, input }) => {
+            const { username, name } = input;
+            const { id: userId } = ctx.auth.user;
+
+            const res = await db
+                .update(user)
+                .set({
+                    username,
+                    name,
+                })
+                .where(eq(user.id, userId));
+
+            return res;
+
         })
 })

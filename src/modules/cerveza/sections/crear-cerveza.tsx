@@ -10,7 +10,6 @@ import { trpc } from "@/trpc/client";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
     Select,
     SelectTrigger,

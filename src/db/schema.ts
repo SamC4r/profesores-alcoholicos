@@ -2,7 +2,9 @@ import { boolean, date, integer, pgTable, primaryKey, text, timestamp, uniqueInd
 
 import {
     createInsertSchema,
+    createUpdateSchema,
 } from "drizzle-zod"
+import z from "zod";
 
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
@@ -22,6 +24,11 @@ export const user = pgTable("user", {
     imageUrl: text("imageUrl"),
 });
 
+
+export const UsuarioNamesSchema = z.object({
+    username: z.string(),
+    name: z.string(),
+});
 
 export const session = pgTable("session", {
     id: text("id").primaryKey(),

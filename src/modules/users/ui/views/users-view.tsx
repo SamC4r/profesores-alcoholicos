@@ -298,8 +298,11 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                                     <div className="space-y-4">
                                         {degustaciones.map((degustacion) => (
                                             <div key={degustacion.id} className="flex items-center gap-4 p-3 rounded-lg bg-gray-50/50">
-                                                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                                    <MapPin className="w-5 h-5 text-green-600" />
+                                                <div className="flex flex-col items-center text-center gap-1">
+                                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                                        <MapPin className="w-5 h-5 text-green-600" />
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground">{degustacion.local}</p>
                                                 </div>
                                                 <div className="w-full flex flex-col gap-2">
                                                     <div className="w-full flex justify-between">
