@@ -304,11 +304,13 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                         <div className="lg:col-span-2 space-y-6">
                             {/* About Section */}
                             <Card className="border-0 shadow-sm bg-white/80 backdrop-blur-sm">
-                                <CardHeader className="pb-4 flex items-center gap-2">
+                                <CardHeader className="pb-4 flex items-center gap-3">
                                     <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                         About
                                     </CardTitle>
-                                    <PencilIcon className="size-4 hover:cursor-pointer" onClick={() => setOpen((e) => !e)} />
+                                    {userId === session?.user.id && (
+                                        < PencilIcon className="size-4 mb-1 hover:cursor-pointer" onClick={() => setOpen((e) => !e)} />
+                                    )}
 
 
                                     {/*Edit about modal */}
@@ -322,9 +324,9 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                                     </ResponsiveModal>
                                 </CardHeader>
                                 <CardContent>
-                                    <pre className="text-gray-600 leading-relaxed line-clamp-6">
+                                    <p className="font-mono text-gray-600 leading-relaxed line-clamp-6 whitespace-pre-line ">
                                         {user.bio || "Este usuario no ha añadido ninguna descripción."}
-                                    </pre>
+                                    </p>
                                 </CardContent>
                             </Card>
 
