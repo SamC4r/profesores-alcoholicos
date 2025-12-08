@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { compactDate } from "@/lib/utils";
 import { ResponsiveModal } from "@/components/responsive-modal";
 import { DescriptionForm } from "../components/description-edit-form";
+import { Rating, RatingButton } from "@/components/ui/shadcn-io/rating";
 
 interface Props {
     userId: string;
@@ -346,7 +347,14 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                                                 </div>
                                                 <div className="w-full flex flex-col gap-2">
                                                     <div className="w-full flex justify-between">
-                                                        <p className="text-sm font-medium text-gray-900">{degustacion.cerveza.nombre}</p>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="text-md font-medium text-gray-900">{degustacion.cerveza.nombre}</p>
+                                                            <Rating readOnly value={degustacion.calificacion} className="ml-3">
+                                                                {Array.from({ length: 5 }).map((_, index) => (
+                                                                    <RatingButton key={index} className=" text-yellow-300 w-5 h-5 mb-1" />
+                                                                ))}
+                                                            </Rating>
+                                                        </div>
                                                         <p className="text-xs text-muted-foreground">{compactDate(degustacion.createdAt)}</p>
                                                     </div>
                                                     <span className="text-sm text-muted-foreground line-clamp-2 flex items-start gap-3">
@@ -497,7 +505,7 @@ export const UsersViewSuspense = ({ userId }: Props) => {
 
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };
