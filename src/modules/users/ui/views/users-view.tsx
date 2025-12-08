@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, UserPlus, Calendar, Mail, Phone, Edit, Check, MessageCircle, OctagonAlertIcon, Search, UserCheck, Users, X, Beer, Store, Send, LogOut, Pen } from "lucide-react";
+import { MapPin, UserPlus, Calendar, Mail, Phone, Edit, Check, MessageCircle, OctagonAlertIcon, Search, UserCheck, Users, X, Beer, Store, Send, LogOut, Pen, PencilIcon } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient, useSession } from "@/lib/auth-client";
@@ -15,6 +15,8 @@ import { UserInfo } from "../components/user-info";
 import { UserFriendRequest } from "../components/user-friend-request";
 import { Input } from "@/components/ui/input";
 import { compactDate } from "@/lib/utils";
+import { ResponsiveModal } from "@/components/responsive-modal";
+import { DescriptionForm } from "../components/description-edit-form";
 
 interface Props {
     userId: string;
@@ -120,13 +122,42 @@ export const UsersViewSuspense = ({ userId }: Props) => {
     }
     );
 
+
+
+
+
+
+
+
+
+
+
+    const [open, setOpen] = useState(false);
+
+
+
+
+
+
+    console.log("OPEN", open);
+
+
+
+
+
+
     if (!userData) return <ProfileLoading />;
 
     const { user } = userData;
 
-    console.log("Session", session?.user.id)
+    // console.log("Session", session?.user.id)
 
-    console.log("DEGUSTACIONES", degustaciones)
+    // console.log("DEGUSTACIONES", degustaciones)
+
+
+
+
+
 
     return (
         <>
@@ -175,9 +206,6 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                                         </Badge>
                                     </div>
                                     <p className="text-gray-600 text-lg mb-1">@{user.username}</p>
-                                    {user?.bio && (
-                                        <p className="text-gray-500 mt-2">{user.bio}</p>
-                                    )}
                                 </div>
                             </div>
 
@@ -275,15 +303,27 @@ export const UsersViewSuspense = ({ userId }: Props) => {
                         <div className="lg:col-span-2 space-y-6">
                             {/* About Section */}
                             <Card className="border-0 shadow-sm bg-white/80 backdrop-blur-sm">
-                                <CardHeader className="pb-4">
+                                <CardHeader className="pb-4 flex items-center gap-2">
                                     <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                         About
                                     </CardTitle>
+                                    <PencilIcon className="size-4 hover:cursor-pointer" onClick={() => setOpen((e) => !e)} />
+
+
+                                    {/*Edit about modal */}
+
+                                    <ResponsiveModal
+                                        title="Editar descripción"
+                                        open={open}
+                                        onOpenChange={() => setOpen(false)}
+                                    >
+                                        <DescriptionForm userId={user.id} setOpen={setOpen} />
+                                    </ResponsiveModal>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-gray-600 leading-relaxed">
+                                    <pre className="text-gray-600 leading-relaxed line-clamp-6">
                                         {user.bio || "Este usuario no ha añadido ninguna descripción."}
-                                    </p>
+                                    </pre>
                                 </CardContent>
                             </Card>
 

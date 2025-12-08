@@ -278,5 +278,25 @@ export const usersRouter = createTRPCRouter({
 
             return res;
 
-        })
+        }),
+
+    updateBio: protectedProcedure
+        .input(z.object({
+            bio: z.string().min(1),
+        }))
+        .mutation(async ({ ctx, input }) => {
+            const { bio } = input;
+            const { id: userId } = ctx.auth.user;
+
+            const res = await db
+                .update(user)
+                .set({
+                    bio
+                })
+                .where(eq(user.id, userId));
+
+            return res;
+
+        }),
+
 })

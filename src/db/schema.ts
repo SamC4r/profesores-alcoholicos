@@ -30,6 +30,10 @@ export const UsuarioNamesSchema = z.object({
     name: z.string(),
 });
 
+export const UsuarioDescriptionUpdateSchema = z.object({
+    bio: z.string(),
+})
+
 export const session = pgTable("session", {
     id: text("id").primaryKey(),
     expiresAt: timestamp("expires_at").notNull(),
