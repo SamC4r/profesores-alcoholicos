@@ -111,17 +111,18 @@ export const UsersViewSuspense = ({ userId }: Props) => {
 
 
 
-    const filteredUsers = friends.filter(user => {
+    const filteredUsers = friends.filter((rel) => {
+        const q = searchQuery.toLowerCase();
 
-        //xd => se podria hacer mucho mejor pero bueno
+        const other =
+            rel.userA?.id === userId ? rel.userB : rel.userA;
 
-        if (user.userA?.id === userId) {
-            return user.userB?.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.userB?.username?.includes(searchQuery.toLowerCase());
-        } else {
-            return user.userA?.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.userA?.username?.includes(searchQuery.toLowerCase());
-        }
-    }
-    );
+        const name = (other?.name ?? "").toLowerCase();
+        const username = (other?.username ?? "").toLowerCase();
+
+        return name.includes(q) || username.includes(q);
+    });
+
 
 
 
